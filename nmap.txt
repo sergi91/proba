@@ -1,0 +1,50 @@
+#Ejecutamos nmap sobre una IP para conocer los puertos activos.
+$nmap 192.168.0.101
+
+#Si queremos conocer qué tipo de sistema operativo se está ejecutando en el host explorado
+#añadimos la opción -O. Observar que la orden se ejecuta como root, o también con privilegios
+#(sudo).
+sudo nmap -O 192.168.0.101
+
+#Si se quiere conocer los hosts activos en la red, 192.168.0.0/24 utilizamos un Ping Scan. En realidad
+#lo que se envía son peticiones de respuesta ICMP a cada una de las IPs dadas. Si un host contesta
+#significa que está activo
+
+
+nmap -sP 192.168.0.1-255
+
+
+#Sondeo básico TCP/UDP
+#Las opciones a utilizar son: -sT / -sU escaneo TCP/UDP connect()
+#Utiliza la llamada de sistema connect() (disponible para cualquier usuario sin privilegios) para
+#establecer una conexión con todos los puertos posibles de la máquina.
+
+nmap -sT 62.41.70.186
+
+sudo nmap -sU 62.41.70.186
+
+#Realizar Stealth Scans (escaneos sigilosos)
+#Si se quiere no ser detectado por software de detección de sondeos con nmap se envían paquetes a
+#los hosts con ciertos 'flags' TCP activados o desactivados para evitarlo.
+
+nmap -sX -O 192.168.0.102
+
+#Sondeo TCP SYN
+#También se llama 'half open' porque no abre una conexión TCP completa. El procedimiento consiste
+#en abrir una conexión real enviando un paquete SYN y se espera a que llegue una respuesta ACK
+#(puerto escuchando) para enseguida enviar un RST y cortar la conexión
+
+nmap -sS 173.194.34.49
+
+#Guardar los resultados de la exploración
+#Podemos guardar los resultados de una exploración en archivos con varios formatos como txt,
+#XML, etc. Para ello utilizamos la opción -oN indicando a continuación el nombre del archivo.
+#En el ejemplo anterior, podemos hacer el stealth scan del tipo Xmas Tree, intentar conocer el
+#sistema operativo y ahora guardamos los resultados en el archivo resultado.txt:
+nmap -sX -O 192.168.0.102 -oN resultado.txt
+
+#listar puertos que tiene abiertos esa ip
+
+nmap -p 80 192.168.1.1
+
+

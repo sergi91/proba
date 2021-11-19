@@ -1,0 +1,16 @@
+#Instalacció de ddrecue
+
+sudo apt install gddrescue
+
+#Creació de la imatge que volem recuperar
+
+sudo ddrescue -n /dev/sdb  /home/sergi/imatge.img      /home/sergi/imatge2
+
+#Instalació de test disk 
+
+sudo apt install testdisk
+
+# Selecionarem disk imatge.img y li donarem a whole  y todo a whole
+
+
+#Per a fer un borrat segur de les dades utilitzarem el bleachBit

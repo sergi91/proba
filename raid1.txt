@@ -1,0 +1,83 @@
+#Si volem fer un RAID, siga el que siga, primer necessitem saber els noms dels disc durs que
+#anem a utilitzar. Podem llistar el directori /dev/disk/by-id per veure quants discs tenim
+
+ls -l /dev/disk/by-id/
+
+#formatejarem els disc durs tant sdb com sdc amb gparted
+
+sudo gparted
+
+
+#Una vegada creades les particions el
+#llistat dels discs queda de la següent manera:
+- ls -l /dev/disk/by-id/
+
+#Instalarem el programa mdadm
+
+sudo apt update
+sudo apt install mdadm
+
+#Una vegada tenim mdadm instal·lat ja podem crear el nostre RAID. Com a exemple s’ha
+#escollit un RAID 1, també anomenat RAID en espill (els dos discs tenen el mateix contingut).
+
+sudo mdadm -C /dev/md1 -l raid1 -n 2 /dev/sd[b-c]1
+
+
+#Una vegada fet
+#RAID el sistema començarà a sincronitzar el dos discs durs. Podem veure el procés de
+#sincronització amb el comandament:
+
+sudo mdadm --detail /dev/dm1
+
+#Cal esmentar que “/dev/md1” és el nom que li hem posat al nou dispositiu RAID, però quan
+#reiniciem la màquina aquest nom es perdrà i passarà a ser “/dev/md127”. Si no volem que canvie el
+#nom el procediment a fer seria obrir un terminal i executar el següent:
+
+sudo su
+mdadm -Es >> /etc/mdadm/mdadm.conf
+exit
+
+#A continuació, editem el fitxer “/etc/mdadm/mdadm.conf” i anem a la última línia, que és la
+#que s’haurà afegit amb l’execució dels comandaments anteriors. Eliminem les parts que sobren per
+#què quede semblant a aquesta:
+
+ARRAY /dev/md1 UUID=031cea92:50a7a28c:6b077fe7:8817092a
+
+
+#Cal tenir compte de no modificar el UUID, que haurà de ser el que tenim posat al fitxer.
+#Finalment, executem els següents comandaments:
+
+sudo update-initramfs -u
+sudo reboot
+
+#Ara que ja tenim el RAID, hem de formatar-lo per a poder-lo utilitzar. Ho podem fer amb el
+#sistema d’arxius que usem normalment. En l’exemple hem emprat ext4.
+
+sudo mkfs.ext4 /dev/md1
+
+#ara crearem una carpeta al nostre home y montarem el raid sobre ella
+mkdir /home/sergi/copia
+
+#Ara montarem el raid sobre la carpeta copia
+
+sudo mount /dev/md1 /home/sergi/copia
+
+#anirem al fitxer de configuració de /etc/fstab i anyadirem la seguent linea per a que el monte de forma permanent
+
+/dev/md1   /home/sergi/copia    ext4  defaults  0   2
+
+#li donarem permisos a la carpeta  ya que sinos no ens deixara fer res
+
+chown  sergi:sergi copies
+chmod 755  copies 
+sinos al raid
+
+#Si volem llevar el disc sdb del RAID perquè s’ha trencat o està donant errors, primer el
+#marquem com a defectuós i després el llevem del RAID.
+sudo mdadm --manage /dev/md1 --fail /dev/sdb1
+sudo mdadm --manage /dev/md1 --remove /dev/sdb1
+
+#Una vegada marcat com a defectuós, si tenim un disc de reserva s’activarà automàticament i
+#començarà a reconstruir el RAID.
+#• Per a canviar directament un disc del RAID:
+sudo mdadm --manage /dev/md1 --replace /dev/sdb1 --with /dev/sdd1

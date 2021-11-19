@@ -1,0 +1,62 @@
+#Crear una clave
+gpg --gen-key
+Generalmente puedes seleccionar las que vienen por defecto.
+
+#Exportar una clave pública dentro del archivo public.key
+gpg --export -a "Nombre de Usuario" > public.key
+
+#el cual por sí mismo básicamente va a imprimir un montón de porquerías en tu pantalla. Recomiendo no hacerlo.
+
+gpg --export -a “Nombre de Usuario"
+
+
+#imprime la clave pública para el ‘Nombre de Usuario’ en la línea de comandos, lo cual es medio útil para exportar una clave privada:
+
+gpg --export-secret-key -a "Nombre de Usuario" > private.key
+
+#Importar una clave pública
+gpg --import public.key
+
+#Importar una clave privada
+gpg --allow-secret-key-import --import private.key
+
+#Eliminar una clave pública (de tu anillo de claves públicas):
+gpg --delete-key "Nombre de Usuario"
+
+#Eliminar una clave secreta (una clave de tu anillo de claves secreta)
+gpg --delete-secret-key "Nombre de Usuario"
+
+#Listar las claves de tu anillo de claves secretas
+gpg --list-secret-keys
+
+#Generar una lista corta de números que puedes usar a través de un método alternativo para verificar la clave pública
+gpg --fingerprint > fingerprint
+
+gpg --edit-key
+gpg --gen-revoke
+#--gen-revoke crea un certificado de revocación, el cual es distribuido a los usuarios y los servidores de claves te dicen que tu clave ya no es más válida.
+
+#--edit-key te permite hacer una colección de operaciones con las claves. 
+
+
+			#Firmar y verificar firmas
+#La opción de línea de órdenes --sign se usa para generar una firma digital. El documento que se desea firmar es la entrada, y la salida es el documento firmado.
+
+gpg --output doc.sig --sign doc
+
+#Con un documento con firma digital el usuario puede llevar a cabo dos acciones: comprobar sólo la firma o comprobar la firma y recuperar el documento original al mismo tiempo. Para comprobar la firma se usa la opción --verify. Para verificar la firma y extraer el documento se usa la opción --decrypt. El documento con la firma es la entrada, y el documento original recuperado es la salida.
+
+gpg --output doc --decrypt doc.sig
+
+#Documentos con firmas ASCII
+#Las firmas digitales suelen usarse a menudo para firmar mensajes de correo electrónicos o en los grupos de noticias. En estas situaciones no se debe comprimir el documento al firmarlo, ya que para aquellos que no dispongan de un sistema para procesarlo sería ininteligible.
+
+gpg --clearsign doc
+
+#Firmas acompañantes
+#Un documento firmado tiene una utilidad limitada. Los otros usuarios deben recuperar la versión original del documento de la versión firmada, y aun en el caso de los documento firmados en ASCII, el documento firmado debe ser editado para poder recuperar el original. Por tanto, existe un tercer método para firmar un documento, que genera una firma acompañante. Para generar una firma acompañante se usa la opción --detach-sig.
+
+gpg --output doc.sig --detach-sig doc
+
+#Tanto el documento como la firma acompañante son necesarios para poder verificar la firma. La opción --verify se usará para comprobar la firma.
+gpg --verify doc.sig doc

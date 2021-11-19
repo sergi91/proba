@@ -1,0 +1,40 @@
+#Instalar el clamav 
+
+sudo apt install clamav clamav-daemon
+
+#Actualitzar la base de dades de clamav
+#parar el servici clavav amb 
+
+sudo systemctl stop clamav-freshclam.service
+
+#ara farem una actualitzacio del antivirus
+
+sudo freshclam
+
+#ara arrancarem el programa
+
+sudo systemctl start clamav-freshclam.service
+
+#analitzar el sistema 
+
+sudo clamscan -r /ruta 
+
+#eliminar virus
+
+sudo clamscan --infected --remove --recursive /ruta aon em analitzat
+
+#Instalacció rkhunterr 
+
+sudo apt install rkhunter -y
+
+#Actualització de rkhunter
+
+anar a cd /etc/rkhunter.conf
+
+cambiarem UPDATE_MIRRORS=1
+CAMBIAREM  MIRRORS_MODE=0
+CAMBIAREM A WEB_CMD=""
+
+#LLANÇAR EL PROGRAMA SERA
+
+sudo rkhunter -c --enable all
